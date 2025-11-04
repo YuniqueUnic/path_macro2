@@ -26,7 +26,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-path_macro2 = "0.1.1"
+path_macro2 = "0.1.2"
 ```
 
 ### Usage

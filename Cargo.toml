@@ -1,0 +1,24 @@
+[package]
+name = "path_macro2"
+version = "0.1.0"
+edition = "2024"
+authors = ["yunique unic<yuniqueunic@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Cross-platform path construction macro supporting both slash (/) and comma (,) syntax with variable interpolation"
+categories = ["filesystem", "development-tools", "os", "parsing"]
+keywords = [
+    "path",
+    "macro",
+    "filesystem",
+    "cross-platform",
+    "path-construction",
+]
+repository = "https://github.com/yuniqueunic/path_macro2"
+documentation = "https://docs.rs/path_macro2"
+readme = "README.md"
+
+[features]
+default = []
+# no_std = [] # TODO: add no_std support
+
+[dependencies]

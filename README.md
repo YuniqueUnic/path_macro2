@@ -2,7 +2,9 @@
 
 [![Crates.io](https://img.shields.io/crates/v/path_macro2.svg)](https://crates.io/crates/path_macro2)
 [![Documentation](https://docs.rs/path_macro2/badge.svg)](https://docs.rs/path_macro2)
-[![License](https://img.shields.io/crates/l/path_macro2.svg)](https://github.com/yuniqueunic/path_macro2#license)
+[![License](https://img.shields.io/crates/l/path_macro)](https://github.com/yuniqueunic/path_macro2#license)
+![Crates.io Total Downloads](https://img.shields.io/crates/d/path_macro2)
+![Deps.rs Crate Dependencies (latest)](https://img.shields.io/deps-rs/path_macro2/latest)
 
 A cross-platform path construction macro for Rust that provides an intuitive
 syntax for building file paths while automatically handling platform-specific
@@ -52,6 +54,7 @@ let path2 = path!(vendor, dll, windivert.c);
 ##### Identifiers and Dotted Names
 
 ```rust
+use path_macro2::path;
 let path = path!(vendor / include);           // Simple identifiers
 let file = path!(config / settings.json);    // Dotted identifiers
 ```
@@ -59,6 +62,7 @@ let file = path!(config / settings.json);    // Dotted identifiers
 ##### String Literals (for spaces and special characters)
 
 ```rust
+use path_macro2::path;
 let path = path!("my folder" / "sub folder" / file.txt);
 let docs = path!("Program Files" / "MyApp" / readme.md);
 ```
@@ -66,6 +70,7 @@ let docs = path!("Program Files" / "MyApp" / readme.md);
 ##### Variable Interpolation
 
 ```rust
+use path_macro2::path;
 let base = "vendor";
 let version = "1.0";
 
@@ -79,6 +84,7 @@ let versioned = path!(libs / {format!("v{}", version)} / library.so);
 ##### Unix/Linux Absolute Paths
 
 ```rust
+use path_macro2::path;
 let abs_path = path!("/" / "usr" / "local" / "bin" / "myapp");
 // Result: "/usr/local/bin/myapp"
 ```
@@ -86,6 +92,7 @@ let abs_path = path!("/" / "usr" / "local" / "bin" / "myapp");
 ##### Windows Paths
 
 ```rust
+use path_macro2::path;
 // Drive letter paths
 let win_path = path!("C:\\" / "Program Files" / "MyApp" / "app.exe");
 // Result: "C:\Program Files\MyApp\app.exe"
@@ -152,7 +159,7 @@ Licensed under either of
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE) or http://opensource.org/licenses/MIT)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
 

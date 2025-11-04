@@ -1,7 +1,8 @@
 [package]
 name = "path_macro2"
 version = "0.1.1"
-edition = "2024"
+edition = "2021"
+rust-version = "1.56.0"
 authors = ["yunique unic<yuniqueunic@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Cross-platform path construction macro supporting both slash (/) and comma (,) syntax with variable interpolation"

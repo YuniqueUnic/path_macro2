@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 /// Cross-platform path construction macro.
 ///
 /// Returns a [`PathBuf`].

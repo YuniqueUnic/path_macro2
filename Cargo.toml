@@ -22,3 +22,9 @@ default = []
 # no_std = [] # TODO: add no_std support
 
 [dependencies]
+
+
+[package.metadata.release]
+pre-release-replacements = [
+    { file = "README.md", search = "path_macro2 = \"[0-9]+\\.[0-9]+\\.[0-9]+[^\"]*\"", replace = "path_macro2 = \"{{version}}\"" },
+]

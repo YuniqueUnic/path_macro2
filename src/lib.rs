@@ -128,3 +128,137 @@ macro_rules! path {
         path
     }};
 }
+
+/// Cross-platform path constant macro that generates `&'static str`.
+///
+/// Returns a compile-time string with platform-appropriate path separators.
+/// - Windows: uses backslash `\`
+/// - Unix/Linux/macOS: uses forward slash `/`
+///
+/// # Supported Syntax
+///
+/// - `path_const!(a / b / c)` — slash separators
+/// - `path_const!(a, b, c)` — comma separators
+/// - Identifiers: `vendor`, `dll`
+/// - Dotted identifiers: `file.txt`, `windivert.c`
+/// - String literals: `"my folder"`, `"file name.txt"`
+///
+/// # Examples
+///
+/// ```rust
+/// use path_macro2::path_const;
+/// const CONFIG_PATH: &str = path_const!(config / app.toml);
+/// const LIB_PATH: &str = path_const!(vendor, dll, windivert.c);
+/// const DEF_FLAG: &str = concat!("/DEF:", path_const!(vendor / dll / windivert.def));
+/// ```
+#[cfg(target_os = "windows")]
+#[macro_export]
+macro_rules! path_const {
+    // === Internal: Build segments ===
+    // String literal followed by slash → add as segment and continue
+    (@build [$($result:expr),*] [] $lit:literal / $($rest:tt)*) => {
+        path_const!(@build [$($result,)* $lit] [] $($rest)*)
+    };
+    // String literal followed by comma → add as segment and continue
+    (@build [$($result:expr),*] [] $lit:literal , $($rest:tt)*) => {
+        path_const!(@build [$($result,)* $lit] [] $($rest)*)
+    };
+    // String literal at end → add as segment
+    (@build [$($result:expr),*] [] $lit:literal) => {
+        path_const!(@concat $($result,)* $lit)
+    };
+    // Slash `/` → complete current segment
+    (@build [$($result:expr),*] [$($current:tt)+] / $($rest:tt)*) => {
+        path_const!(@build [$($result,)* path_const!(@finish [$($current)+])] [] $($rest)*)
+    };
+    (@build [$($result:expr),*] [] / $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [] $($rest)*)
+    };
+    // Comma `,` → complete current segment
+    (@build [$($result:expr),*] [$($current:tt)+] , $($rest:tt)*) => {
+        path_const!(@build [$($result,)* path_const!(@finish [$($current)+])] [] $($rest)*)
+    };
+    (@build [$($result:expr),*] [] , $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [] $($rest)*)
+    };
+    // Accumulate tokens (including `.`)
+    (@build [$($result:expr),*] [$($current:tt)*] $next:tt $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [$($current)* $next] $($rest)*)
+    };
+    // End: finalize last segment
+    (@build [$($result:expr),*] [$($current:tt)+]) => {
+        path_const!(@concat $($result,)* path_const!(@finish [$($current)+]))
+    };
+    (@build [$($result:expr),*] []) => {
+        path_const!(@concat $($result),*)
+    };
+    // === Helper: Finalize one segment ===
+    (@finish []) => { "" };
+    (@finish [$($tokens:tt)+]) => { stringify!($($tokens)+) };
+    // === Concat with platform separators ===
+    (@concat) => { "" };
+    (@concat $single:expr) => { $single };
+    (@concat $first:expr, $($rest:expr),+) => {
+        concat!($first, "\\", path_const!(@concat $($rest),+))
+    };
+    // === Entry point ===
+    ($($tokens:tt)*) => {
+        path_const!(@build [] [] $($tokens)*)
+    };
+}
+
+#[cfg(not(target_os = "windows"))]
+#[macro_export]
+macro_rules! path_const {
+    // === Internal: Build segments ===
+    // String literal followed by slash → add as segment and continue
+    (@build [$($result:expr),*] [] $lit:literal / $($rest:tt)*) => {
+        path_const!(@build [$($result,)* $lit] [] $($rest)*)
+    };
+    // String literal followed by comma → add as segment and continue
+    (@build [$($result:expr),*] [] $lit:literal , $($rest:tt)*) => {
+        path_const!(@build [$($result,)* $lit] [] $($rest)*)
+    };
+    // String literal at end → add as segment
+    (@build [$($result:expr),*] [] $lit:literal) => {
+        path_const!(@concat $($result,)* $lit)
+    };
+    // Slash `/` → complete current segment
+    (@build [$($result:expr),*] [$($current:tt)+] / $($rest:tt)*) => {
+        path_const!(@build [$($result,)* path_const!(@finish [$($current)+])] [] $($rest)*)
+    };
+    (@build [$($result:expr),*] [] / $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [] $($rest)*)
+    };
+    // Comma `,` → complete current segment
+    (@build [$($result:expr),*] [$($current:tt)+] , $($rest:tt)*) => {
+        path_const!(@build [$($result,)* path_const!(@finish [$($current)+])] [] $($rest)*)
+    };
+    (@build [$($result:expr),*] [] , $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [] $($rest)*)
+    };
+    // Accumulate tokens (including `.`)
+    (@build [$($result:expr),*] [$($current:tt)*] $next:tt $($rest:tt)*) => {
+        path_const!(@build [$($result),*] [$($current)* $next] $($rest)*)
+    };
+    // End: finalize last segment
+    (@build [$($result:expr),*] [$($current:tt)+]) => {
+        path_const!(@concat $($result,)* path_const!(@finish [$($current)+]))
+    };
+    (@build [$($result:expr),*] []) => {
+        path_const!(@concat $($result),*)
+    };
+    // === Helper: Finalize one segment ===
+    (@finish []) => { "" };
+    (@finish [$($tokens:tt)+]) => { stringify!($($tokens)+) };
+    // === Concat with platform separators ===
+    (@concat) => { "" };
+    (@concat $single:expr) => { $single };
+    (@concat $first:expr, $($rest:expr),+) => {
+        concat!($first, "/", path_const!(@concat $($rest),+))
+    };
+    // === Entry point ===
+    ($($tokens:tt)*) => {
+        path_const!(@build [] [] $($tokens)*)
+    };
+}
